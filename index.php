@@ -1,59 +1,58 @@
 <?php
 
+/* ---------- Imports ---------- */
 require_once __DIR__ . "/classes/Product.class.php";
 
-$produit1 = new Product(10, 20, "Quatre saisons", "Pizza", 1, "Sauce tomate, fromage, artichauts, poivron, jambon cuit, champignons");
+/* ----- Traitement de la requête si le verbe HTTP est POST */
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    /* ----- Récupération des valeurs du body de la requête */
+    $priceValue = $_POST["priceValue"];
+    $vat_rate = $_POST["vat_rate"];
+    $name = $_POST["name"];
+    $category = $_POST["category"];
+    $description = $_POST["description"];
+    $stock = $_POST["stock"];
 
-var_dump($produit1);
-
+    /* ----- Création de l'instance de Product */
+    $new_product = new Product($vat_rate, $name, $category, $description, $stock);
+    $new_product->setPrice($priceValue);
+}
 ?>
 
+
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier 5 : e-commerce 1</title>
+    <title>E-commerce</title>
 </head>
 
 <body>
+    <!-- Formulaire de saisie des infos du produit -->
+    <form action="index.php" method="POST">
+        <input type="number" name="priceValue" placeholder="Prix HT" step="0.01" required />
+        <input type="number" name="vat_rate" placeholder="Taux de TVA" step="0.1" required />
+        <input type="text" name="name" placeholder="Nom" required />
 
-    <!-- Formulaire d'entrée pour création de produit -->
-    <section>
-        <form action="index.php" method="POST">
-            <input type="number" name="prix_HT" placeholder="prix HT">
-            <input type="number" name="TVA" placeholder="TVA : %">
-            <input type="text" name="nom" placeholder="Nom du produit">
-            <input type="text" name="categorie" placeholder="Catégorie">
-            <input type="number" name="stock" placeholder="Stock">
-            <input type="text" name="description" placeholder="Description">
-            <button>Valider</button>
+        <select name="category">
+            <option value="fruit">Fruit</option>
+            <option value="vegetable">Légume</option>
+            <option value="drink">Boisson</option>
+        </select>
 
-        </form>
+        <textarea name="description"></textarea>
 
-    </section>
+        <input type="number" name="stock" placeholder="Quantité" required>
 
-    <?php
-    $produitTest = new Product($_POST["prix_HT"], $_POST["TVA"], $_POST["nom"], $_POST["categorie"], $_POST["stock"], $_POST["description"])
-    ?>
+        <input type="submit" value="valider" />
 
-    <!-- div d'affichage du produit -->
-    <div>
-        <h2>Votre produit :</h2>
-        <p> Nom : <?php echo $produitTest->nom ?></p>
-        <p> Prix HT : <?php echo $produitTest->prix_HT ?></p>
-        <p> TVA : <?php echo $produitTest->TVA ?></p>
-        <p> Prix TTC : <?php echo $produitTest->prix_TTC ?></p>
-        <p> Catégorie : <?php echo $produitTest->categorie ?></p>
-        <p> Stock : <?php echo $produitTest->stock ?></p>
-        <p> Description : <?php echo $produitTest->description ?></p>
-
-
-    </div>
-
+    </form>
+    <!-- Appel de la méthode pour afficher les infos du produit -->
+    <?php if (isset($new_product)) {
+        $new_product->displayProdInfo();
+    } ?>
 </body>
 
 </html>
